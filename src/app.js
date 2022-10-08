@@ -2,6 +2,8 @@ const express = require('express');
 const bodyparser = require('body-parser');
 
 // rotas
+const userRouter = require('./routes/user');
+const vacationRouter = require('./routes/vacation');
 
 // conectando
 const app = express();
@@ -12,6 +14,8 @@ app.use(express.json());
 app.use(bodyparser.json());
 
 // configurando as rotas utilizadas
+app.use(userRouter);
+app.use(vacationRouter);
 
 // conectando com o mongodb
 db();
