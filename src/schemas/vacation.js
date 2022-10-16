@@ -14,20 +14,26 @@ const VacationSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    ida: {
-        transportes: [{
-            tipo: {type: String},
-            descricao: {type: String},
-            horario: {type: String}
-        }],
-    },
-    volta: {
-        transportes: [{
-            tipo: {type: String},
-            descricao: {type: String},
-            horario: {type: String}
-        }],
-    },
+    transportes: [{
+        tipo: {type: String},
+        descricao: {type: String},
+        horario: {type: String},
+        caminho: {type: String}
+    }],
+    // ida: {
+    //     transportes: [{
+    //         tipo: {type: String},
+    //         descricao: {type: String},
+    //         horario: {type: String}
+    //     }],
+    // },
+    // volta: {
+    //     transportes: [{
+    //         tipo: {type: String},
+    //         descricao: {type: String},
+    //         horario: {type: String}
+    //     }],
+    // },
     proprietario: {
         type: mongoose.Schema.Types.Object,
         ref: 'Usuarios'
@@ -39,6 +45,7 @@ const VacationSchema = new mongoose.Schema({
     }],
     checklist: [{
         status: {type: Boolean},
+        descricao: {type: String},
         categoria: {type: String}
     }],
     gastos: {
@@ -55,10 +62,16 @@ const VacationSchema = new mongoose.Schema({
         check_in: {type: String},
         check_out: {type: String}
     }],
-    roteiro: {
-        type: mongoose.Schema.Types.Array,
-        ref: 'Roteiro'
-    },
+    // roteiro: {
+    //     type: mongoose.Schema.Types.Array,
+    //     ref: 'Roteiro'
+    // },
+    roteiro:[{
+        dia: {type: Number},
+        hora: {type: Number},
+        local: {type: String},
+        descricao: {type: String}
+    }],
     orcamento_total: {
         type: Number
     }
@@ -76,5 +89,5 @@ VacationSchema.pre('save', async function(next){
     next();
 });
 
-const Vacation = mongoose.model('Produtos', VacationSchema);
+const Vacation = mongoose.model('Férias', VacationSchema);
 module.exports = Vacation;

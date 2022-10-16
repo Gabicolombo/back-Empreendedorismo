@@ -1,4 +1,15 @@
 const Vacation = require('../schemas/vacation');
+const User = require('../schemas/user');
+
+const addArray = async(nameVacation, key, array)=>{
+    console.log('addArray');
+    let keyName = key;
+    console.log(keyName);
+    await Vacation.updateOne(
+        { nome: nameVacation },
+        { $push: { [key]: array}}
+    ).then(err => console.log(err))
+}
 
 const registerVacation = async(req, res, next) => {
     try{
@@ -9,6 +20,11 @@ const registerVacation = async(req, res, next) => {
         req.body.proprietario = req.user;
 
         await Vacation.create(req.body);
+        
+        await User.updateOne(
+            {nome_usuario: req.user.nome_usuario}, 
+            {$push: {viagens: req.body.nome}} 
+        );
 
         return res.status(200).json({message: 'Cadastro feito com sucesso'});
 
@@ -27,7 +43,7 @@ const updateVacation = async(req, res, next) => {
         // verificar se o req.user.nome_usuario é igual proprietario
         const vacation = await Vacation.find({
             $and: [
-                {proprietario: req.user.nome_usuario}, 
+                {'proprietario.nome_usuario': req.user.nome_usuario}, 
                 {nome: nameVacation}
             ]
         });
@@ -44,45 +60,32 @@ const updateVacation = async(req, res, next) => {
             req.body.gastos.outros ?  vacation.gastos.outros+=req.body.gastos.outros : vacation.gastos.outros+=0;
         }
 
-        let hotelArray = [{}]
-
         if(req.body.hasOwnProperty('hotel')){
-            hotelArray = req.body.hotel;
+            await addArray(nameVacation, 'hotel', req.body.hotel);
             delete req.body.hotel;
         }
 
-        let checklist = {}
         if(req.body.hasOwnProperty('checklist')){
-            checklist = req.bodu.checklist;
+            await addArray(nameVacation,'checklist', req.body.checklist);
             delete req.body.checklist;
         }
 
-        let ida = {}
-        if(req.body.hasOwnProperty('ida')){
-            ida = req.body.ida;
-            delete req.body.ida;
+        if(req.body.hasOwnProperty('transportes')){
+            await addArray(nameVacation, 'transportes', req.body.transportes);
+            delete req.body.transportes;
         }
 
-        let volta = {}
-        if(req.body.hasOwnProperty('volte')){
-            volta = req.body.volta;
-            delete req.body.volta;
+        if(req.body.hasOwnProperty('roteiro')){
+            await addArray(nameVacation, 'roteiro', req.body.roteiro);
+            delete req.body.roteiro;
         }
-        
+       
         await Vacation.updateOne(
             { nome: nameVacation },
             { $set: req.body },
-            { $push: {hotel: hotelArray}},
-            { $push: {ida: ida}},
-            // { $push: {volta: volta}},
-            // { $push: {checklist: checklist}},
-            // checklist,
-            // ida,
-            // volta
-        ).exec();
-    
+        )
+        
         res.status(200).json({ message: 'Atualizado com sucesso' });
-
 
     }catch(err){
         console.error(err);

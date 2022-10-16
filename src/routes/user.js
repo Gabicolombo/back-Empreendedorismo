@@ -6,6 +6,6 @@ const routes = express.Router();
 const baseUrl = '/user';
 
 routes.post(`${baseUrl}/register`, controller.register);
-routes.get(`${baseUrl}/`, controller.login);
+routes.post(`${baseUrl}/login`, controller.login);
 
 module.exports = routes;

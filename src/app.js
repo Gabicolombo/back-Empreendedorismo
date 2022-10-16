@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyparser = require('body-parser');
+const cors = require('cors');
 
 // rotas
 const userRouter = require('./routes/user');
@@ -10,6 +11,7 @@ const app = express();
 const port = process.env.port || 2828;
 
 const db = require('./database/mongoConnection');
+app.use(cors());
 app.use(express.json());
 app.use(bodyparser.json());
 

@@ -7,7 +7,7 @@ async function comparePassword(input, password){
 
 const login = async(req, res, next) => {
     try{
-
+     
         const {email, senha} = req.body;
 
         const user = await User.findOne({email: email}).select('+senha');
