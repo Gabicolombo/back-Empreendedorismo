@@ -1,14 +1,25 @@
 const Vacation = require('../schemas/vacation');
 const User = require('../schemas/user');
 
-const addArray = async(nameVacation, key, array)=>{
-    console.log('addArray');
-    let keyName = key;
-    console.log(keyName);
-    await Vacation.updateOne(
-        { nome: nameVacation },
-        { $push: { [key]: array}}
-    ).then(err => console.log(err))
+const helperUpdate = async(nameVacation, key, array, cond, id=0)=>{
+    if(cond){
+        console.log('addArray');
+        await Vacation.updateOne(
+            { nome: nameVacation },
+            { $push: { [key]: array}}
+        ).then(err => console.log(err))
+    }else{
+        console.log('setArray')
+        
+        let key1 = key+'.id';
+        let key2 = key+'.$';
+        await Vacation.findOneAndUpdate(
+            // {nome: nameVacation},
+            {[key1]: id},
+            {$set: {[key2]: array}},
+        )
+    }
+    
 }
 
 const registerVacation = async(req, res, next) => {
@@ -61,22 +72,35 @@ const updateVacation = async(req, res, next) => {
         }
 
         if(req.body.hasOwnProperty('hotel')){
-            await addArray(nameVacation, 'hotel', req.body.hotel);
+            if(req.body.addItem == true)
+                await helperUpdate(nameVacation, 'hotel', req.body.hotel, req.body.addItem);
+            else
+                console.log(req.params.id);
+                await helperUpdate(nameVacation, 'hotel', req.body.hotel[0], req.body.addItem, req.params.id);
             delete req.body.hotel;
         }
 
         if(req.body.hasOwnProperty('checklist')){
-            await addArray(nameVacation,'checklist', req.body.checklist);
+            if(req.body.addItem == true)
+                await helperUpdate(nameVacation, 'checklist', req.body.checklist, req.body.addItem);
+            else
+                await helperUpdate(nameVacation, 'checklist', req.body.checklist[0], req.body.addItem, req.params.id);
             delete req.body.checklist;
         }
 
         if(req.body.hasOwnProperty('transportes')){
-            await addArray(nameVacation, 'transportes', req.body.transportes);
+            if(req.body.addItem == true)
+                await helperUpdate(nameVacation, 'transportes', req.body.transportes, req.body.addItem);
+            else
+                await helperUpdate(nameVacation, 'transportes', req.body.transportes[0], req.body.addItem, req.params.id);
             delete req.body.transportes;
         }
 
         if(req.body.hasOwnProperty('roteiro')){
-            await addArray(nameVacation, 'roteiro', req.body.roteiro);
+            if(req.body.addItem == true)
+                await helperUpdate(nameVacation, 'roteiro', req.body.roteiro, req.body.addItem);
+            else
+                await helperUpdate(nameVacation, 'roteiro', req.body.roteiro[0], req.body.addItem, req.params.id);
             delete req.body.roteiro;
         }
        
@@ -95,33 +119,54 @@ const updateVacation = async(req, res, next) => {
 
 const getVacation = async(req, res, next) => {
     try{
-        
-        if(await Vacation.find( {
-            $and: [ 
-                {proprietario: {$ne: req.user.nome_usuario }}, 
+        console.log('getVacation');
+        if(!await Vacation.find( {
+            $or: [ 
+                {'proprietario.nome_usuario': {$ne: req.user.nome_usuario }}, 
                 {participantes: {$nin: [req.user.nome_usuario]}} 
             ]
         }))
             return res.status(400).json({message: 'Você não tem acesso a essa viagem.'});
 
-        let vacation = await Vacation.findOne({
-            $or: [ 
-                {proprietario: req.user.nome_usuario }, 
-                {participantes: {$in: [req.user.nome_usuario]}} 
-            ]
-        })
+        let vacations = await Vacation.aggregate([
+            {
+                $match: {
+                    $or: [ 
+                        {'proprietario.nome_usuario': req.user.nome_usuario }, 
+                        {participantes: {$in: [req.user.nome_usuario]}} 
+                    ]
+                }
+            },
+            {
+                $project:{
+                    nome: 1,
+                    origem: 1,
+                    destino: 1,
+                    dataInicio: 1,
+                    dataFim: 1,
+                    _id: 0
+                }
+            }
+        ]).allowDiskUse(true);
 
-        return res.status(200).json({data: vacation});
+        return res.status(200).json({data: vacations});
 
+    }catch(err){
+        console.error(err);
+        next();
+    }
+}
 
-        // if(!await Vacation.find({proprietario: req.user.nome_usuario} ) ) 
-        //     return res.status(400).json({message: 'Você não tem nenhuma viagem cadastrada'});
+const getBudget = async(req, res, next) => {
+    try{
+        const nome = req.params.nome;
 
-        // if(!await Vacation.find({participantes: {$in: [req.user.nome_usuario]}}))
-        //     return res.status(400).json({message: 'Você não tem acesso a essa viagem'});
+        const vacation = await Vacation.find({nome: nome});
+        
+        if(!vacation) return res.status(400).json({message: 'Não existe esse nome de férias'});
+
 
         
-
     }catch(err){
         console.error(err);
         next();

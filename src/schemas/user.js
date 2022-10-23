@@ -29,6 +29,13 @@ const UserSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.String,
         ref: 'Viagem'
     }],
+    checklist: [{
+        id: {type: Number},
+        viagem: {type: mongoose.Schema.Types.String, ref: 'Viagem'},
+        status: {type: Boolean},
+        descricao: {type: String},
+        categoria: {type: String}
+    }],
     tokens:[{
         token:{
             type:String,
@@ -40,11 +47,11 @@ const UserSchema = new mongoose.Schema({
 
 // verificar o usuário premium
 
-UserSchema.virtual('itinerary', {
-    ref:'Itinerary',
-    localField: 'usuario',
-    foreignField: 'nome_usuario'
-})
+// UserSchema.virtual('itinerary', {
+//     ref:'Itinerary',
+//     localField: 'usuario',
+//     foreignField: 'nome_usuario'
+// })
 
 UserSchema.virtual('vacation', {
     ref:'Vacation',

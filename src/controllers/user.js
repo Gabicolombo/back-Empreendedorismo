@@ -45,6 +45,17 @@ const register = async(req, res, next) => {
     }
 }
 
+const getUser = async(req, res, next) => {
+    try{
+
+        res.send(req.user);
+
+    }catch(err){
+        console.error(err);
+        next();
+    }
+}
+
 const getAll = async(req, res, next) => {
     try{
 
@@ -69,8 +80,42 @@ const getAll = async(req, res, next) => {
     }
 }
 
+// atualizar os atributos simples
+// atualizar ou add no checklist
+
+const updateChecklist = async(req, res, next) => {
+    try{
+        
+        const checklist = await User.aggregate([
+            {
+                $match: {
+                    nome_usuario: req.user.nome_usuario
+                }
+            },
+            {
+                $project: {
+                    checklist: 1
+                }
+            }
+        ]).allowDiskUse(true);
+
+        if(checklist.length > 0 && req.body.hasOwnProperty('checklist')){
+            await User.updateOne(
+                {nome_usuario: req.user.nome_usuario},
+                {'checklist.id': req.params.id},
+                {$set: req.body}
+            )
+        }
+
+    }catch(err){
+        console.error(err);
+        next();
+    }
+}
+
 module.exports = {
     register,
     login,
-    getAll
+    getAll,
+    getUser
 }
