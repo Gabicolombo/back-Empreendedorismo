@@ -33,7 +33,7 @@ const register = async(req, res, next) => {
 
         const {email, nome_usuario} = req.body;
 
-        if(await User.findOne({email: email}) || await User.findOne({nome_usuario: nome_usuario}) ) return res.status(200).json({message: 'Esse usuário já está cadastrado'});
+        if(await User.findOne({email: email}) || await User.findOne({nome_usuario: nome_usuario}) ) return res.status(422).json({message: 'Esse usuário já está cadastrado'});
 
         await User.create(req.body);
 
