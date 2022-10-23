@@ -14,7 +14,7 @@ const VacationSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    dataInitio:{
+    dataInicio:{
         type: String,
         required: true
     },

@@ -2,7 +2,6 @@ const Vacation = require('../schemas/vacation');
 const User = require('../schemas/user');
 
 const helperUpdate = async(nameVacation, key, array, cond, id=0)=>{
-    console.log(cond);
     if(cond){
         console.log('addArray');
         await Vacation.updateOne(
@@ -152,6 +151,22 @@ const getVacation = async(req, res, next) => {
 
         return res.status(200).json({data: vacations});
 
+    }catch(err){
+        console.error(err);
+        next();
+    }
+}
+
+const getBudget = async(req, res, next) => {
+    try{
+        const nome = req.params.nome;
+
+        const vacation = await Vacation.find({nome: nome});
+        
+        if(!vacation) return res.status(400).json({message: 'Não existe esse nome de férias'});
+
+
+        
     }catch(err){
         console.error(err);
         next();
