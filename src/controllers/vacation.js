@@ -26,7 +26,7 @@ const registerVacation = async(req, res, next) => {
     try{
         const {nome} = req.body;
 
-        if(await Vacation.findOne({nome: nome})) return res.status(200).json({message: 'Essa viagem já existe'});
+        if(await Vacation.findOne({nome: nome})) return res.status(422).json({message: 'Essa viagem já existe'});
 
         req.body.proprietario = req.user;
 

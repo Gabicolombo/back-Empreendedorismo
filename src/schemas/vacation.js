@@ -26,7 +26,7 @@ const VacationSchema = new mongoose.Schema({
         id: {type: Number},
         tipo: {type: String}, // transporte
         descricao: {type: String},
-        horario: {type: String}, // talvez vai mudar para date
+        data: {type: String}, // talvez vai mudar para date
         caminho: {type: String} // ida e volta
     }],
     proprietario: {
@@ -35,7 +35,8 @@ const VacationSchema = new mongoose.Schema({
     },
     participantes: [{
         type: mongoose.Schema.Types.Object,
-        ref: 'Usuarios' 
+        ref: 'Usuarios',
+        unique: false
     }],
     checklist: [{ // 4ª tela
         id: {type: Number},
