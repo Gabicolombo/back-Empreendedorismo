@@ -38,12 +38,12 @@ const VacationSchema = new mongoose.Schema({
         ref: 'Usuarios',
         unique: false
     }],
-    checklist: [{ // 4ª tela
-        id: {type: Number},
-        status: {type: Boolean},
-        descricao: {type: String},
-        categoria: {type: String}
-    }],
+    // checklist: [{ // 4ª tela
+    //     id: {type: Number},
+    //     status: {type: Boolean},
+    //     descricao: {type: String},
+    //     categoria: {type: String}
+    // }],
     gastos: { // outra tela 2ª tela
         alimentos: {type: Number},
         transporte: {type: Number},
@@ -79,7 +79,9 @@ VacationSchema.virtual('users', {
     ref:'User',
     localField: 'viagens',
     foreignField: 'nome'
-}, {ref: 'User', localField: 'checklist', foreignField: 'nome'})
+}
+// , {ref: 'User', localField: 'checklist', foreignField: 'nome'}
+)
 
 VacationSchema.pre('save', async function(next){
     const vacation = this;

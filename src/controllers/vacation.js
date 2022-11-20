@@ -84,13 +84,13 @@ const updateVacation = async(req, res, next) => {
             delete req.body.hotel;
         }
 
-        if(req.body.hasOwnProperty('checklist')){
-            if(req.body.addItem == true)
-                await helperUpdate(nameVacation, 'checklist', req.body.checklist, req.body.addItem);
-            else
-                await helperUpdate(nameVacation, 'checklist', req.body.checklist[0], req.body.addItem, req.params.id);
-            delete req.body.checklist;
-        }
+        // if(req.body.hasOwnProperty('checklist')){
+        //     if(req.body.addItem == true)
+        //         await helperUpdate(nameVacation, 'checklist', req.body.checklist, req.body.addItem);
+        //     else
+        //         await helperUpdate(nameVacation, 'checklist', req.body.checklist[0], req.body.addItem, req.params.id);
+        //     delete req.body.checklist;
+        // }
 
         if(req.body.hasOwnProperty('transportes')){
             if(req.body.addItem == true)
@@ -162,27 +162,38 @@ const getVacation = async(req, res, next) => {
     }
 }
 
-const getBudget = async(req, res, next) => {
-    try{
-        const nome = req.params.nome;
+// const getBudget = async(req, res, next) => {
+//     try{
+//         const idVacation = req.params.id;
 
-        const vacation = await Vacation.find({nome: nome});
+//         const vacation = await Vacation.aggregate([
+//             {
+//                 $match: {
+//                     _id: new ObjectId(idVacation)
+//                 }
+//             },
+//             {
+//                 $project:{
+
+//                 }
+//             }
+//         ]).allowDiskUse(true);
         
-        if(!vacation) return res.status(400).json({message: 'Não existe esse nome de férias'});
+//         if(!vacation) return res.status(400).json({message: 'Não existe esse nome de férias'});
 
 
         
-    }catch(err){
-        console.error(err);
-        next();
-    }
-}
+//     }catch(err){
+//         console.error(err);
+//         next();
+//     }
+// }
 
 const deleteVacation = async(req, res, next) => {
     try{
        
         const idVacation = req.params.id;
-        console.log(idVacation)
+
         const vacation = await Vacation({_id: new ObjectId(idVacation)});
 
         if(vacation.length < 1) return res.status(404).json({message: 'Férias não encontradas'});

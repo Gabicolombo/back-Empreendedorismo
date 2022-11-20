@@ -5,6 +5,7 @@ const cors = require('cors');
 // rotas
 const userRouter = require('./routes/user');
 const vacationRouter = require('./routes/vacation');
+const checklistRouter = require('./routes/checklist');
 
 // conectando
 const app = express();
@@ -18,6 +19,7 @@ app.use(bodyparser.json());
 // configurando as rotas utilizadas
 app.use(userRouter);
 app.use(vacationRouter);
+app.use(checklistRouter);
 
 // conectando com o mongodb
 db();
