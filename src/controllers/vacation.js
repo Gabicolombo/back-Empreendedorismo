@@ -210,7 +210,7 @@ const deleteVacation = async(req, res, next) => {
 
 module.exports = {
     registerVacation,
-    updateVacation,
+    //updateVacation,
     getVacation,
     deleteVacation
 }

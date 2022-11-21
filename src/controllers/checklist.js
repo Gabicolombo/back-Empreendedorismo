@@ -80,7 +80,7 @@ const putChecklist = async(req, res, next) => {
     try{
 
         const id = req.params.id;
-        console.log(id);
+      
         let user = await User.find({nome_usuario: req.user.nome_usuario});
 
         if(!user) return res.status(404).json({message: 'Esse usuário não tem acesso'});

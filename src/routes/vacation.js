@@ -8,7 +8,7 @@ const baseUrl = '/vacation';
 
 routes.post(`${baseUrl}/register`, auth, controller.registerVacation);
 routes.get(`${baseUrl}/mytravels`, auth, controller.getVacation);
-routes.put(`${baseUrl}/edit/:id`, auth, controller.updateVacation);
+//routes.put(`${baseUrl}/edit/:id`, auth, controller.updateVacation);
 routes.delete(`${baseUrl}/delete/:id`, auth, controller.deleteVacation);
 
 module.exports = routes;
