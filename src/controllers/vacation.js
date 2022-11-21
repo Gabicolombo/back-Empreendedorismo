@@ -1,5 +1,6 @@
 const Vacation = require('../schemas/vacation');
 const User = require('../schemas/user');
+// const Budget = require('../schemas/budget');
 const { ObjectId } = require('mongodb');
 
 const helperUpdate = async(nameVacation, key, array, cond, id=0)=>{
@@ -35,6 +36,7 @@ const registerVacation = async(req, res, next) => {
         req.body.proprietario = req.user;
 
         await Vacation.create(req.body);
+        
         
         await User.updateOne(
             {nome_usuario: req.user.nome_usuario}, 
