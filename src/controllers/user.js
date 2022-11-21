@@ -80,42 +80,33 @@ const getAll = async(req, res, next) => {
     }
 }
 
-// atualizar os atributos simples
-// atualizar ou add no checklist
+// const getChecklist = async(req, res, next)=>{
+//     try{
 
-const updateChecklist = async(req, res, next) => {
-    try{
-        
-        const checklist = await User.aggregate([
-            {
-                $match: {
-                    nome_usuario: req.user.nome_usuario
-                }
-            },
-            {
-                $project: {
-                    checklist: 1
-                }
-            }
-        ]).allowDiskUse(true);
+//         const checklist = await User.aggregate([
+//             {
+//                 $match: {nome_usuario: req.user.nome_usuario}
+//             },
+//             {
+//                 $project:{
+//                     checklist: 1
+//                 }
+//             }
+//         ]); 
 
-        if(checklist.length > 0 && req.body.hasOwnProperty('checklist')){
-            await User.updateOne(
-                {nome_usuario: req.user.nome_usuario},
-                {'checklist.id': req.params.id},
-                {$set: req.body}
-            )
-        }
+//         if(checklist.length === 0) return res.status(404).json({message: 'Esse usuário não tem checklist'});
 
-    }catch(err){
-        console.error(err);
-        next();
-    }
-}
+//         return res.status(200).json(checklist);
+
+//     }catch(err){
+//         console.error(err);
+//         next();
+//     }
+// }
 
 module.exports = {
     register,
     login,
     getAll,
-    getUser
+    getUser,
 }

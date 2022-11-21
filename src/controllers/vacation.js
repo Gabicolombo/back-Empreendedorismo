@@ -1,9 +1,11 @@
 const Vacation = require('../schemas/vacation');
 const User = require('../schemas/user');
+const { ObjectId } = require('mongodb');
 
 const helperUpdate = async(nameVacation, key, array, cond, id=0)=>{
     if(cond){
         console.log('addArray');
+        console.log(key);
         await Vacation.updateOne(
             { nome: nameVacation },
             { $push: { [key]: array}}
@@ -13,11 +15,13 @@ const helperUpdate = async(nameVacation, key, array, cond, id=0)=>{
         
         let key1 = key+'.id';
         let key2 = key+'.$';
+        console.log(key1);
+        console.log(key2);
         await Vacation.findOneAndUpdate(
-            // {nome: nameVacation},
-            {[key1]: id},
-            {$set: {[key2]: array}},
-        )
+            {nome: nameVacation},
+            {'roteiro.id': id},
+            {$set: {'roteiro.$': array}},
+        ).then(msg => console.log(msg))
     }
     
 }
@@ -80,13 +84,13 @@ const updateVacation = async(req, res, next) => {
             delete req.body.hotel;
         }
 
-        if(req.body.hasOwnProperty('checklist')){
-            if(req.body.addItem == true)
-                await helperUpdate(nameVacation, 'checklist', req.body.checklist, req.body.addItem);
-            else
-                await helperUpdate(nameVacation, 'checklist', req.body.checklist[0], req.body.addItem, req.params.id);
-            delete req.body.checklist;
-        }
+        // if(req.body.hasOwnProperty('checklist')){
+        //     if(req.body.addItem == true)
+        //         await helperUpdate(nameVacation, 'checklist', req.body.checklist, req.body.addItem);
+        //     else
+        //         await helperUpdate(nameVacation, 'checklist', req.body.checklist[0], req.body.addItem, req.params.id);
+        //     delete req.body.checklist;
+        // }
 
         if(req.body.hasOwnProperty('transportes')){
             if(req.body.addItem == true)
@@ -119,7 +123,7 @@ const updateVacation = async(req, res, next) => {
 
 const getVacation = async(req, res, next) => {
     try{
-        console.log('getVacation');
+        
         if(!await Vacation.find( {
             $or: [ 
                 {'proprietario.nome_usuario': {$ne: req.user.nome_usuario }}, 
@@ -144,7 +148,8 @@ const getVacation = async(req, res, next) => {
                     destino: 1,
                     dataInicio: 1,
                     dataFim: 1,
-                    _id: 0
+                    roteiro: 1,
+                    _id: 1
                 }
             }
         ]).allowDiskUse(true);
@@ -157,16 +162,46 @@ const getVacation = async(req, res, next) => {
     }
 }
 
-const getBudget = async(req, res, next) => {
+// const getBudget = async(req, res, next) => {
+//     try{
+//         const idVacation = req.params.id;
+
+//         const vacation = await Vacation.aggregate([
+//             {
+//                 $match: {
+//                     _id: new ObjectId(idVacation)
+//                 }
+//             },
+//             {
+//                 $project:{
+
+//                 }
+//             }
+//         ]).allowDiskUse(true);
+        
+//         if(!vacation) return res.status(400).json({message: 'Não existe esse nome de férias'});
+
+
+        
+//     }catch(err){
+//         console.error(err);
+//         next();
+//     }
+// }
+
+const deleteVacation = async(req, res, next) => {
     try{
-        const nome = req.params.nome;
+       
+        const idVacation = req.params.id;
 
-        const vacation = await Vacation.find({nome: nome});
-        
-        if(!vacation) return res.status(400).json({message: 'Não existe esse nome de férias'});
+        const vacation = await Vacation({_id: new ObjectId(idVacation)});
 
+        if(vacation.length < 1) return res.status(404).json({message: 'Férias não encontradas'});
 
-        
+        await Vacation.deleteOne({_id: new ObjectId(idVacation)});
+
+        return res.status(200).json({message: 'Férias deletada com sucesso'});
+
     }catch(err){
         console.error(err);
         next();
@@ -175,6 +210,7 @@ const getBudget = async(req, res, next) => {
 
 module.exports = {
     registerVacation,
-    updateVacation,
-    getVacation
+    //updateVacation,
+    getVacation,
+    deleteVacation
 }
