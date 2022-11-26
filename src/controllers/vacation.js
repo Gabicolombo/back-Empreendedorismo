@@ -164,32 +164,37 @@ const getVacation = async(req, res, next) => {
     }
 }
 
-// const getBudget = async(req, res, next) => {
-//     try{
-//         const idVacation = req.params.id;
+const getBudget = async(req, res, next) => {
+    try{
+        const idVacation = req.params.id;
 
-//         const vacation = await Vacation.aggregate([
-//             {
-//                 $match: {
-//                     _id: new ObjectId(idVacation)
-//                 }
-//             },
-//             {
-//                 $project:{
-
-//                 }
-//             }
-//         ]).allowDiskUse(true);
+        const vacation = await Vacation.aggregate([
+            {
+                $match: {
+                    _id: new ObjectId(idVacation)
+                }
+            },
+            {
+                $project:{
+                    alimentos: '$gastos.alimentos',
+                    transporte: '$gastos.transportes',
+                    hospedagem: '$gastos.hospedagem',
+                    objetos: '$gastos.objetos',
+                    saude: '$gastos.saude',
+                    outros: '$gastos.outros'
+                }
+            }
+        ]).allowDiskUse(true);
         
-//         if(!vacation) return res.status(400).json({message: 'Não existe esse nome de férias'});
+        if(vacation.length === 0) return res.status(400).json({message: 'Não existe esse nome de férias'});
 
-
+        return res.status(200).json(vacation);
         
-//     }catch(err){
-//         console.error(err);
-//         next();
-//     }
-// }
+    }catch(err){
+        console.error(err);
+        next();
+    }
+}
 
 const deleteVacation = async(req, res, next) => {
     try{
@@ -214,5 +219,6 @@ module.exports = {
     registerVacation,
     //updateVacation,
     getVacation,
+    getBudget,
     deleteVacation
 }
