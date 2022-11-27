@@ -181,7 +181,11 @@ const getBudget = async(req, res, next) => {
                     hospedagem: '$gastos.hospedagem',
                     objetos: '$gastos.objetos',
                     saude: '$gastos.saude',
-                    outros: '$gastos.outros'
+                    outros: '$gastos.outros',
+                    nome: 1,
+                    total_disponivel: 1,
+                    gasto_total: {$sum: ['$gastos.alimentos', '$gastos.transportes', '$gastos.hospedagem',
+                    '$gastos.objetos','$gastos.saude', '$gastos.outros']}
                 }
             }
         ]).allowDiskUse(true);

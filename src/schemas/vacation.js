@@ -71,7 +71,7 @@ const VacationSchema = new mongoose.Schema({
         required: true
     },
     gasto_total: { // 2ª tela
-        type: Number
+        type: Number,
     }
 })
 
