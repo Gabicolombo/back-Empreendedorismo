@@ -164,6 +164,52 @@ const getVacation = async(req, res, next) => {
     }
 }
 
+const myTravel = async(req, res, next) =>{
+    try{
+
+        const id = req.params.id;
+        
+        const result = await Vacation.aggregate([
+            {
+                $match: {
+                    _id: new ObjectId(id)
+                }
+            },
+            {
+                $lookup:{
+                    from: 'checklists',
+                    localField: 'nome',
+                    foreignField: 'viagem',
+                    as: 'checklist'
+                }
+            },
+            {
+                $project:{
+                    nome: 1,
+                    transportes: 1,
+                    hotel: 1,
+                    participantes: 1,
+                    origem: 1,
+                    destino: 1,
+                    dataFim: 1,
+                    dataInicio: 1,
+                    roteiro: 1,
+                    checklist: 1
+                }
+            }
+        ]).allowDiskUse(true);
+
+        if(result.length === 0) return res.status(404).json({message: 'Não existe essa viagem'});
+
+        return res.status(200).json(result);
+
+
+    }catch(err){
+        console.error(err);
+        next();
+    }
+}
+
 const getBudget = async(req, res, next) => {
     try{
         const idVacation = req.params.id;
@@ -224,5 +270,6 @@ module.exports = {
     //updateVacation,
     getVacation,
     getBudget,
+    myTravel,
     deleteVacation
 }
