@@ -223,7 +223,7 @@ const getBudget = async(req, res, next) => {
             {
                 $project:{
                     alimentos: '$gastos.alimentos',
-                    transporte: '$gastos.transportes',
+                    transporte: '$gastos.transporte',
                     hospedagem: '$gastos.hospedagem',
                     objetos: '$gastos.objetos',
                     saude: '$gastos.saude',
