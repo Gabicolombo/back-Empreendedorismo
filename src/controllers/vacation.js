@@ -1,6 +1,6 @@
 const Vacation = require('../schemas/vacation');
 const User = require('../schemas/user');
-// const Budget = require('../schemas/budget');
+const CheckList = require('../schemas/checklist');
 const { ObjectId } = require('mongodb');
 
 const helperUpdate = async(nameVacation, key, array, cond, id=0)=>{
@@ -34,6 +34,18 @@ const registerVacation = async(req, res, next) => {
         if(await Vacation.findOne({nome: nome})) return res.status(422).json({message: 'Essa viagem já existe'});
 
         req.body.proprietario = req.user;
+
+        if(req.body.hasOwnProperty("checklists")){
+            let array = req.body.checklists;
+           
+            req.body.checklists.forEach(e => {
+                e.usuario = req.user.nome_usuario;
+                e.viagem = req.body.nome;
+            })
+            
+            await CheckList.create(req.body.checklists);
+            delete req.body.checklist;
+        }
 
         await Vacation.create(req.body);
         
