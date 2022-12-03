@@ -29,6 +29,7 @@ const helperUpdate = async(nameVacation, key, array, cond, id=0)=>{
 
 const registerVacation = async(req, res, next) => {
     try{
+        console.log(req.body);
         const {nome} = req.body;
 
         if(await Vacation.findOne({nome: nome})) return res.status(422).json({message: 'Essa viagem já existe'});
@@ -178,7 +179,7 @@ const getVacation = async(req, res, next) => {
 
 const myTravel = async(req, res, next) =>{
     try{
-
+        
         const id = req.params.id;
         
         const result = await Vacation.aggregate([
@@ -266,7 +267,8 @@ const deleteVacation = async(req, res, next) => {
         const vacation = await Vacation({_id: new ObjectId(idVacation)});
 
         if(vacation.length < 1) return res.status(404).json({message: 'Férias não encontradas'});
-
+       
+        await CheckList.deleteMany({viagem: vacation.nome});
         await Vacation.deleteOne({_id: new ObjectId(idVacation)});
 
         return res.status(200).json({message: 'Férias deletada com sucesso'});

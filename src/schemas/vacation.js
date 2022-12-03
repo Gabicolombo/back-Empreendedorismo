@@ -62,6 +62,7 @@ const VacationSchema = new mongoose.Schema({
     roteiro: [{ // 3ª tela
         id: { type: Number },
         dia: { type: Number },
+        mes: {type: Number},
         hora: { type: Number },
         local: { type: String },
         descricao: { type: String }
