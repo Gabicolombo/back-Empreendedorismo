@@ -1,11 +1,16 @@
 const CheckList = require('../schemas/checklist');
 const User = require('../schemas/user');
+const Vacation = require('../schemas/vacation');
+const { ObjectId } = require('mongodb');
 
 const getChecklist = async(req, res, next)=>{
     try{
         // verificando o usuário autenticado
         const user = req.user.nome_usuario;
-        
+        const idTravel = req.query.id_viagem;
+
+        const vacation = await Vacation.findOne({_id: new ObjectId(idTravel)});
+      
         let result = [];
 
         // categoria da home - Documentos
@@ -38,35 +43,26 @@ const getChecklist = async(req, res, next)=>{
                 }
             ]).allowDiskUse(true);
         }else{
+     
             result = await CheckList.aggregate([
                 {
-                    $match:{usuario: user, status:false}
+                    $match:{usuario: user, viagem:vacation.nome}
                 },
                 {
-                    $project:{
-                        usuario: 1,
-                        viagem: 1,
-                        categoria: 1,
-                        descricao: 1,
-                        status: 1
-                    }
-                },
-                {
-                    $group:{
-                        _id: '$viagem',
+                    $group: {
+                        _id: "$categoria",
                         info: {
                             $push: {
-                              categoria: '$categoria',
-                              id: '$_id',
-                              descricao: '$descricao',
-                              status: '$status'
-                            }
-                        }
-                    }
+                                descricao: "$descricao",
+                                status: "$status",
+                                id: '$_id'
+                            },
+                        },
+                    },
                 }
             ]).allowDiskUse(true);
         }
-        
+      
         return res.status(200).json(result);
 
 
